@@ -123,11 +123,11 @@ struct addrinfo *p;
             get_in_addr((struct sockaddr *)&their_addr),
             s, sizeof s);
         
-        printf("server: got connection from %\n", s);
+        printf("server: got connection from %s\n", s);
 
         if (!fork()) { //this is the child process
             close(sockfd); // doesn't need the listener
-            if (send(new_fd, "Hello, World!", 13, 0) == -1)
+            if (send(new_fd, "Hello, World!\n", 14, 0) == -1)
                 perror("send");
             close(new_fd);
             exit(0);
