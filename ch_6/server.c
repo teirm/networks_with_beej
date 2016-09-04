@@ -131,22 +131,19 @@ struct addrinfo *p;
         printf("server: got connection from %s\n", s);
 
         if (!fork()) { //this is the child process
-//            close(sockfd); // doesn't need the listener
-            
-            if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
+            close(sockfd); // doesn't need the listener
+
+            if (send(new_fd, "Hello, World!\n", 14, 0) == -1)
+                perror("send");
+     
+            if ((numbytes = recv(new_fd, buf, MAXDATASIZE-1, 0)) == -1) {
                 perror("recv");
                 exit(1);
             }
 
             buf[numbytes]='\0';
-
-            printf("server: received '%s'\n", buf);
-
-            if (send(new_fd, "Hello, World!\n", 14, 0) == -1)
-                perror("send");
-     
-   
-   
+            printf("server: received %s\n", buf);
+            
             close(new_fd);
             exit(0);
         }
