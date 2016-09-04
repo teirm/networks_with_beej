@@ -88,6 +88,10 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+    if (send(sockfd, "Kittens!\n", 9, 0) == -1)
+        perror("send");
+        
+
     buf[numbytes] = '\0';
 
     printf("client: received '%s'\n", buf);

@@ -17,6 +17,7 @@
 
 #define PORT    "3490"
 #define BACKLOG 10
+#define MAXDATASIZE 100
 
 void sigchld_handler(int s)
 {
@@ -42,6 +43,8 @@ int main(void)
 {
     int sockfd; // listen on
     int new_fd; // new connections on
+    int numbytes;
+
 
     struct addrinfo hints;
     struct addrinfo *servinfo;
@@ -54,6 +57,8 @@ struct addrinfo *p;
     int yes = 1;
     char s[INET6_ADDRSTRLEN];
     int rv;
+
+    char buf[MAXDATASIZE];
 
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
@@ -126,9 +131,22 @@ struct addrinfo *p;
         printf("server: got connection from %s\n", s);
 
         if (!fork()) { //this is the child process
-            close(sockfd); // doesn't need the listener
+//            close(sockfd); // doesn't need the listener
+            
+            if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
+                perror("recv");
+                exit(1);
+            }
+
+            buf[numbytes]='\0';
+
+            printf("server: received '%s'\n", buf);
+
             if (send(new_fd, "Hello, World!\n", 14, 0) == -1)
                 perror("send");
+     
+   
+   
             close(new_fd);
             exit(0);
         }
